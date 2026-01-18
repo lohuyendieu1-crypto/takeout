@@ -105,4 +105,18 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Employee> employees = page.getResult();
         return new PageResult(total, employees);
     }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        // 在update語句中可以動態一點，不只更新狀態，還可以更新其他字段
+
+        Employee employee = Employee.builder()
+                        .status(status)
+                        .id(id)
+                        .updateTime(LocalDateTime.now())
+                        .updateUser(BaseContext.getCurrentId())
+                        .build();
+
+        employeeMapper.update(employee);
+    }
 }
