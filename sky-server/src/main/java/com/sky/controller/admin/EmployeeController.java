@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 员工管理
+ * 員工管理
  */
 @RestController
 @RequestMapping("/admin/employee")
@@ -35,7 +35,7 @@ public class EmployeeController {
     private JwtProperties jwtProperties;
 
     /**
-     * 登录
+     * 登入
      *
      * @param employeeLoginDTO
      * @return
