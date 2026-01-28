@@ -6,3 +6,15 @@ sky:
     database: sky_take_out
     username: root
     password: lingorm2025
+
+
+cloudflare:
+  r2:
+    access-key: 5b00275ce0a81ae5a85ebaad7073d501
+    secret-key: 9d394d92bc3ae7c02b3bbf83b5932cbe5c05843a40356ff24ff925fb76530c17
+
+    # 注意：Endpoint 只要填到 .com 結尾，不要在後面加 bucket 名字
+    endpoint: https://995b684d42000aa737229249bc0b0e63.r2.cloudflarestorage.com
+    bucket-name: takeout
+    # 這是你在 R2 後台開通 Public Access 後拿到的那個網址
+    domain: https://pub-8d29a482218340218685f9643da792f4.r2.dev

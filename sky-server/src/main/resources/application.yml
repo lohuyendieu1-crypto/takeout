@@ -37,3 +37,13 @@ sky:
     admin-ttl: 7200000
     # 設置前端傳遞過來的令牌名稱
     admin-token-name: token
+
+cloudflare:
+  r2:
+    access-key: ${sky.r2.access-key}
+    secret-key: ${sky.r2.secret-key}
+    # 注意：Endpoint 只要填到 .com 結尾，不要在後面加 bucket 名字
+    endpoint: ${sky.r2.endpoint}
+    bucket-name: ${sky.r2.bucket-name}
+    # 這是你在 R2 後台開通 Public Access 後拿到的那個網址
+    domain: ${sky.r2.domain}
