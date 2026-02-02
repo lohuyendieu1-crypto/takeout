@@ -141,8 +141,26 @@ public class DishServiceImpl implements DishService {
             // 向菜品口味表插入多條數據
             dishFlavorMapper.insertBatch(flavors);
         }
+    }
 
+    @Override
+    public List<Dish> list(Long categoryId) {
 
+        Dish dish = Dish.builder()
+                        .categoryId(categoryId)
+                        .status(StatusConstant.ENABLE)
+                        .build();
 
+        return dishMapper.list(dish);
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Dish dish = Dish.builder()
+                .id(id)
+                .status(status)
+                .build();
+        // 直接復用之前寫好的通用 update 方法即可
+        dishMapper.update(dish);
     }
 }
