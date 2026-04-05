@@ -21,20 +21,20 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Http工具类
+ * Http 工具類，封裝了 GET、POST 請求，支持參數以表單或 JSON 格式傳遞
  */
 public class HttpClientUtil {
 
     static final  int TIMEOUT_MSEC = 5 * 1000;
 
     /**
-     * 发送GET方式请求
+     * 發送 GET 方式請求
      * @param url
      * @param paramMap
      * @return
      */
     public static String doGet(String url,Map<String,String> paramMap){
-        // 创建Httpclient对象
+        // 創建 Httpclient 對象
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
         String result = "";
@@ -49,13 +49,13 @@ public class HttpClientUtil {
             }
             URI uri = builder.build();
 
-            //创建GET请求
+            // 創建GET請求
             HttpGet httpGet = new HttpGet(uri);
 
-            //发送请求
+            // 發送請求
             response = httpClient.execute(httpGet);
 
-            //判断响应状态
+            // 判斷響應狀態
             if(response.getStatusLine().getStatusCode() == 200){
                 result = EntityUtils.toString(response.getEntity(),"UTF-8");
             }
@@ -74,36 +74,36 @@ public class HttpClientUtil {
     }
 
     /**
-     * 发送POST方式请求
+     * 發送 POST 方式請求
      * @param url
      * @param paramMap
      * @return
      * @throws IOException
      */
     public static String doPost(String url, Map<String, String> paramMap) throws IOException {
-        // 创建Httpclient对象
+        // 創建 Httpclient 對象
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;
         String resultString = "";
 
         try {
-            // 创建Http Post请求
+            // 創建 Http Post請求
             HttpPost httpPost = new HttpPost(url);
 
-            // 创建参数列表
+            // 創建參數列表
             if (paramMap != null) {
                 List<NameValuePair> paramList = new ArrayList();
                 for (Map.Entry<String, String> param : paramMap.entrySet()) {
                     paramList.add(new BasicNameValuePair(param.getKey(), param.getValue()));
                 }
-                // 模拟表单
+                // 模擬表單
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(paramList);
                 httpPost.setEntity(entity);
             }
 
             httpPost.setConfig(builderRequestConfig());
 
-            // 执行http请求
+            // 執行 http 請求
             response = httpClient.execute(httpPost);
 
             resultString = EntityUtils.toString(response.getEntity(), "UTF-8");
@@ -121,39 +121,39 @@ public class HttpClientUtil {
     }
 
     /**
-     * 发送POST方式请求
+     * 發送 POST方式請求，參數以 JSON格式傳遞
      * @param url
      * @param paramMap
      * @return
      * @throws IOException
      */
     public static String doPost4Json(String url, Map<String, String> paramMap) throws IOException {
-        // 创建Httpclient对象
+        // 創建 Httpclient 對象
         CloseableHttpClient httpClient = HttpClients.createDefault();
         CloseableHttpResponse response = null;
         String resultString = "";
 
         try {
-            // 创建Http Post请求
+            // 創建 Http Post 請求
             HttpPost httpPost = new HttpPost(url);
 
             if (paramMap != null) {
-                //构造json格式数据
+                // 構造 json 格式數據
                 JSONObject jsonObject = new JSONObject();
                 for (Map.Entry<String, String> param : paramMap.entrySet()) {
                     jsonObject.put(param.getKey(),param.getValue());
                 }
                 StringEntity entity = new StringEntity(jsonObject.toString(),"utf-8");
-                //设置请求编码
+                // 設置請求編碼
                 entity.setContentEncoding("utf-8");
-                //设置数据类型
+                // 設置數據類型
                 entity.setContentType("application/json");
                 httpPost.setEntity(entity);
             }
 
             httpPost.setConfig(builderRequestConfig());
 
-            // 执行http请求
+            // 執行 http 請求
             response = httpClient.execute(httpPost);
 
             resultString = EntityUtils.toString(response.getEntity(), "UTF-8");

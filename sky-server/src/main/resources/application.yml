@@ -42,6 +42,13 @@ sky:
     admin-ttl: 7200000
     # 設置前端傳遞過來的令牌名稱
     admin-token-name: token
+    user-secret-key: itcast
+    user-ttl: 7200000
+    user-token-name: authentication
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
+
 
 cloudflare:
   r2:

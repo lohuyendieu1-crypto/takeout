@@ -11,8 +11,9 @@ sky:
     port: 6379
     # password:
     database: 0
-
-
+  wechat:
+    appid: wxb02a79329d3fa706
+    secret: 1b8f9983827ad3b69469676fab28fa4d
 cloudflare:
   r2:
     access-key: 5b00275ce0a81ae5a85ebaad7073d501
