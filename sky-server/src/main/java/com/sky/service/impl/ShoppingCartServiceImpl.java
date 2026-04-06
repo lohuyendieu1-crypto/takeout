@@ -88,4 +88,10 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
         return list;
     }
+
+    @Override
+    public void cheanShoppingCart() {
+        Long userId = BaseContext.getCurrentId(); // 獲取到當前微信用戶的 id
+        shoppingCartMapper.deleteByUserId(userId);
+    }
 }
