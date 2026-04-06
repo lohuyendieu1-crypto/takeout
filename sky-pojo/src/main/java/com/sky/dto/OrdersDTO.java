@@ -12,43 +12,43 @@ public class OrdersDTO implements Serializable {
 
     private Long id;
 
-    //订单号
+    // 訂單號
     private String number;
 
-    //订单状态 1待付款，2待派送，3已派送，4已完成，5已取消
+    // 訂單狀態 1待付款，2待派送，3已派送，4已完成，5已取消
     private Integer status;
 
-    //下单用户id
+    // 下單用戶id
     private Long userId;
 
-    //地址id
+    // 地址id
     private Long addressBookId;
 
-    //下单时间
+    // 下單時間
     private LocalDateTime orderTime;
 
-    //结账时间
+    // 結帳時間
     private LocalDateTime checkoutTime;
 
-    //支付方式 1微信，2支付宝
+    // 支付方式 1微信，2支付寶
     private Integer payMethod;
 
-    //实收金额
+    // 實收金額
     private BigDecimal amount;
 
-    //备注
+    // 備注
     private String remark;
 
-    //用户名
+    // 用戶名
     private String userName;
 
-    //手机号
+    // 手機號
     private String phone;
 
-    //地址
+    // 地址
     private String address;
 
-    //收货人
+    // 收貨人
     private String consignee;
 
     private List<OrderDetail> orderDetails;

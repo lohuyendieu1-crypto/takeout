@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderSubmitVO implements Serializable {
-    //订单id
+    // 訂單id
     private Long id;
-    //订单号
+    // 訂單號
     private String orderNumber;
-    //订单金额
+    // 訂單金額
     private BigDecimal orderAmount;
-    //下单时间
+    // 下單時間
     private LocalDateTime orderTime;
 }

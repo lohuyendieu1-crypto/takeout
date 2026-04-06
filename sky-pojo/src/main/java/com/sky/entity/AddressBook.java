@@ -20,42 +20,42 @@ public class AddressBook implements Serializable {
 
     private Long id;
 
-    //用户id
+    // 用戶id
     private Long userId;
 
-    //收货人
+    // 收貨人
     private String consignee;
 
-    //手机号
+    // 手機號
     private String phone;
 
-    //性别 0 女 1 男
+    // 性別 0 女 1 男
     private String sex;
 
-    //省级区划编号
+    // 省級區劃編號
     private String provinceCode;
 
-    //省级名称
+    // 省級名稱
     private String provinceName;
 
-    //市级区划编号
+    // 市級區劃編號
     private String cityCode;
 
-    //市级名称
+    // 市級名稱
     private String cityName;
 
-    //区级区划编号
+    // 區級區劃編號
     private String districtCode;
 
-    //区级名称
+    // 區級名稱
     private String districtName;
 
-    //详细地址
+    // 詳細地址
     private String detail;
 
-    //标签
+    // 標簽
     private String label;
 
-    //是否默认 0否 1是
+    // 是否默認 0否 1是
     private Integer isDefault;
 }

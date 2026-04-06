@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * 订单明细
+ * 訂單明細
  */
 @Data
 @Builder
@@ -21,27 +21,27 @@ public class OrderDetail implements Serializable {
 
     private Long id;
 
-    //名称
+    // 名稱
     private String name;
 
-    //订单id
+    // 訂單id
     private Long orderId;
 
-    //菜品id
+    // 菜品id
     private Long dishId;
 
-    //套餐id
+    // 套餐id
     private Long setmealId;
 
-    //口味
+    // 口味
     private String dishFlavor;
 
-    //数量
+    // 數量
     private Integer number;
 
-    //金额
+    // 金額
     private BigDecimal amount;
 
-    //图片
+    // 圖片
     private String image;
 }
