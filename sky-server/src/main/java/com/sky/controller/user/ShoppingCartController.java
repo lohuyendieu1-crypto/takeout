@@ -46,4 +46,13 @@ public class ShoppingCartController {
         shoppingCartService.cheanShoppingCart();
         return Result.success();
     }
+
+    @PostMapping("/sub")
+    @ApiOperation("減少購物車中菜品或套餐的數量")
+    public Result sub(@RequestBody ShoppingCartDTO shoppingCartDTO) {
+        log.info("減少購物車中菜品或套餐的數量:{}", shoppingCartDTO);
+        shoppingCartService.subShoppingCart(shoppingCartDTO);
+        return Result.success();
+
+    }
 }

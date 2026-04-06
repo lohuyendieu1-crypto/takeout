@@ -24,4 +24,10 @@ public interface ShoppingCartService {
      * 清空購物車
      */
     void cheanShoppingCart();
+
+    /**
+     * 減少購物車中菜品或套餐的數量
+     * @param shoppingCartDTO
+     */
+    void subShoppingCart(ShoppingCartDTO shoppingCartDTO);
 }
