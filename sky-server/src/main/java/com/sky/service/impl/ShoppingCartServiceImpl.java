@@ -76,10 +76,16 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             shoppingCart.setNumber(1); // 設置數量默認為 1
             shoppingCart.setCreateTime(LocalDateTime.now());
             shoppingCartMapper.insert(shoppingCart);
-
-
         }
+    }
 
-
+    @Override
+    public List<ShoppingCart> showShoppintCart() {
+        Long userId = BaseContext.getCurrentId(); // 獲取到當前微信用戶的 id
+        ShoppingCart shoppingCart = ShoppingCart.builder()
+                .userId(userId)
+                .build();
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        return list;
     }
 }
