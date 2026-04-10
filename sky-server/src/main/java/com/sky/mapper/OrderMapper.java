@@ -28,6 +28,13 @@ public interface OrderMapper {
     Orders getByNumberAndUserId(String orderNumber, Long userId);
 
     /**
+     * 根據訂單號查詢訂單
+     * @param orderNumber
+     */
+    @Select("select * from orders where number = #{orderNumber}")
+    Orders getByNumber(String orderNumber);
+
+    /**
      * 修改訂單信息
      * @param orders
      */

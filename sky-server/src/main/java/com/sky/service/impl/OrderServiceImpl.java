@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -18,6 +19,8 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
+import io.jsonwebtoken.impl.crypto.MacProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +32,9 @@ import org.springframework.util.CollectionUtils;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,8 +53,10 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ShoppingCartMapper  shoppingCartMapper;
 
-    // 這裡注入一個 Orders 對象，方便後續獲取當前用戶的訂單id，實際開發中不建議這麼做，這裡是為了跳過支付環節方便測試
-    private Orders orders;
+
+    @Autowired
+    private WebSocketServer  webSocketServer;
+
     /**
      * 用戶下單
      * @param ordersSubmitDTO
@@ -88,7 +95,6 @@ public class OrderServiceImpl implements OrderService {
         orders.setPhone(addressBook.getPhone());
         orders.setConsignee(addressBook.getConsignee());
         orders.setUserId(userId);
-        this.orders = orders; // 跳過支付加上這句
         orderMapper.insert(orders);
 
         List<OrderDetail> orderDetailList = new ArrayList<>(); // 方便後續批量插入訂單明細數據
@@ -148,10 +154,10 @@ public class OrderServiceImpl implements OrderService {
         jsonObject.put("code","ORDERPAID");
         OrderPaymentVO vo = jsonObject.toJavaObject(OrderPaymentVO.class);
         vo.setPackageStr(jsonObject.getString("package"));
-        Integer OrderPaidStatus = Orders.PAID; // 支付状态，已支付
-        Integer OrderStatus = Orders.TO_BE_CONFIRMED;  // 订单状态，待接单
-        LocalDateTime check_out_time = LocalDateTime.now();// 更新支付时间
-        orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, this.orders.getId());
+        // 測試環境跳過微信支付時，直接走支付成功邏輯，和真實回調保持同一路徑
+        paySuccess(ordersPaymentDTO.getOrderNumber());
+
+
         return vo;
     }
 
@@ -161,11 +167,11 @@ public class OrderServiceImpl implements OrderService {
      * @param outTradeNo
      */
     public void paySuccess(String outTradeNo) {
-        // 當前登錄用戶id
-        Long userId = BaseContext.getCurrentId();
-
-        // 根據訂單號查詢當前用戶的訂單
-        Orders ordersDB = orderMapper.getByNumberAndUserId(outTradeNo, userId);
+        // 支付回調場景沒有登錄態，必須只按訂單號查詢
+        Orders ordersDB = orderMapper.getByNumber(outTradeNo);
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
 
         // 根據訂單id更新訂單的狀態、支付方式、支付狀態、結帳時間
         Orders orders = Orders.builder()
@@ -176,6 +182,15 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        // 推送消息通知商戶端有新訂單
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1); // type1表示來單提醒 2表示客戶催單
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "訂單號:" + ordersDB.getNumber());
+
+        String json = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(json);
     }
 
     /**
@@ -264,12 +279,12 @@ public class OrderServiceImpl implements OrderService {
         if (ordersDB.getStatus().equals(Orders.TO_BE_CONFIRMED)) {
             //調用微信支付退款接口
             weChatPayUtil.refund(
-                    ordersDB.getNumber(), //商戶訂單號
-                    ordersDB.getNumber(), //商戶退款單號
-                    new BigDecimal(0.01),//退款金額，單位 元
-                    new BigDecimal(0.01));//原訂單金額
+                    ordersDB.getNumber(),  // 商戶訂單號
+                    ordersDB.getNumber(),  // 商戶退款單號
+                    new BigDecimal(0.01), // 退款金額，單位 元
+                    new BigDecimal(0.01)); // 原訂單金額
 
-            //支付狀態修改爲 退款
+            // 支付狀態修改爲 退款
             orders.setPayStatus(Orders.REFUND);
         }
 
@@ -413,10 +428,10 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
 
-        //支付狀態
+        // 支付狀態
         Integer payStatus = ordersDB.getPayStatus();
         if (payStatus == Orders.PAID) {
-            //用戶已支付，需要退款
+            // 用戶已支付，需要退款
             String refund = weChatPayUtil.refund(
                     ordersDB.getNumber(),
                     ordersDB.getNumber(),
@@ -512,4 +527,31 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.update(orders);
     }
 
+
+    /**
+     * 客戶催單
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+
+        // 根據id查詢訂單
+        Orders ordersDB = orderMapper.getById(id);
+
+        // 校驗訂單是否存在，幷且狀態爲4
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Map map = new HashMap();
+        map.put("type",2); // 1表示來單提醒 2表示客戶催單
+        map.put("orderId",ordersDB.getId());
+        map.put("content","訂單號:"+ordersDB.getNumber()+"客戶催單了");
+        String json = JSON.toJSONString(map);
+
+        // 通過websocket推送消息給商戶端，通知有訂單被催單了
+        webSocketServer.sendToAllClient(json);
+
+
+    }
 }
